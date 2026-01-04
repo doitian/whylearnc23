@@ -376,6 +376,89 @@ START_TEST(test_string_printf_hex)
 }
 END_TEST
 
+// Test: string_take returns the contents and resets the string
+START_TEST(test_string_take_basic)
+{
+    struct string str = {};
+
+    string_puts(&str, "hello world");
+    char *result = string_take(&str);
+
+    // Verify the returned string
+    ck_assert_ptr_nonnull(result);
+    ck_assert_str_eq(result, "hello world");
+
+    // Verify the original string is reset
+    ck_assert_ptr_null(str.contents);
+    ck_assert_uint_eq(str.len, 0);
+
+    free(result);
+}
+END_TEST
+
+// Test: string_take on empty string
+START_TEST(test_string_take_empty)
+{
+    struct string str = {};
+
+    char *result = string_take(&str);
+
+    // Should return NULL for empty string
+    ck_assert_ptr_null(result);
+
+    // Verify the string remains reset
+    ck_assert_ptr_null(str.contents);
+    ck_assert_uint_eq(str.len, 0);
+}
+END_TEST
+
+// Test: string_take with previously allocated empty string
+START_TEST(test_string_take_allocated_empty)
+{
+    struct string str = {};
+
+    // Create an allocated empty string
+    string_putsn(&str, "test", 0);
+    char *result = string_take(&str);
+
+    // Should return the allocated empty string
+    ck_assert_ptr_nonnull(result);
+    ck_assert_str_eq(result, "");
+
+    // Verify the original string is reset
+    ck_assert_ptr_null(str.contents);
+    ck_assert_uint_eq(str.len, 0);
+
+    free(result);
+}
+END_TEST
+
+// Test: string_take and then reuse the string
+START_TEST(test_string_take_reuse)
+{
+    struct string str = {};
+
+    string_puts(&str, "first");
+    char *first = string_take(&str);
+
+    // Reuse the string after take
+    string_puts(&str, "second");
+    char *second = string_take(&str);
+
+    // Verify both strings
+    ck_assert_ptr_nonnull(first);
+    ck_assert_str_eq(first, "first");
+    ck_assert_ptr_nonnull(second);
+    ck_assert_str_eq(second, "second");
+
+    // Verify the original string is reset
+    ck_assert_ptr_null(str.contents);
+    ck_assert_uint_eq(str.len, 0);
+
+    free(first);
+    free(second);
+}
+END_TEST
 // Test suite setup
 Suite *string_suite(void)
 {
@@ -384,6 +467,7 @@ Suite *string_suite(void)
     TCase *tc_putsn;
     TCase *tc_putc;
     TCase *tc_printf;
+    TCase *tc_take;
     TCase *tc_cleanup;
 
     s = suite_create("String");
@@ -425,6 +509,14 @@ Suite *string_suite(void)
     tcase_add_test(tc_printf, test_string_printf_multiple_calls);
     tcase_add_test(tc_printf, test_string_printf_hex);
     suite_add_tcase(s, tc_printf);
+
+    // Test case for string_take
+    tc_take = tcase_create("string_take");
+    tcase_add_test(tc_take, test_string_take_basic);
+    tcase_add_test(tc_take, test_string_take_empty);
+    tcase_add_test(tc_take, test_string_take_allocated_empty);
+    tcase_add_test(tc_take, test_string_take_reuse);
+    suite_add_tcase(s, tc_take);
 
     // Test case for string_cleanup
     tc_cleanup = tcase_create("string_cleanup");

@@ -47,6 +47,12 @@ int string_printf(struct string *str, char const *format, ...) {
     return raw_added_len;
 }
 
+char* string_take(struct string *str) {
+    char *result = str->contents;
+    *str = (struct string){};
+    return result;
+}
+
 void string_cleanup(struct string *str) {
     free(str->contents);
     *str = (struct string){};
