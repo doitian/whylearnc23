@@ -46,7 +46,7 @@ conan install . --build=missing --settings=build_type=Release
 
 #### On Windows (Visual Studio):
 ```bash
-cmake --preset conan-default -DCMAKE_C_FLAGS="/std:clatest"
+cmake --preset conan-default"
 ```
 
 #### On Linux/macOS:

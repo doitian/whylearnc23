@@ -4,7 +4,7 @@ run = "conan install . --build=missing --settings=build_type=Release"
 [tasks.setup]
 depends = ["install"]
 run = "cmake --preset conan-release"
-run_windows = "cmake --preset conan-default -DCMAKE_C_FLAGS=/std:clatest"
+run_windows = "cmake --preset conan-default"
 
 [tasks.clean]
 run = "rm -rf build"
