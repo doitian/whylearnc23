@@ -84,22 +84,149 @@ START_TEST(test_string_cleanup)
 }
 END_TEST
 
+// Test: string_putsn appends n characters to empty string
+START_TEST(test_string_putsn_empty)
+{
+    struct string str = {};
+
+    string_putsn(&str, "hello", 3);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "hel");
+    ck_assert_uint_eq(str.len, 3);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_putsn appends n characters to existing string
+START_TEST(test_string_putsn_append)
+{
+    struct string str = {};
+
+    string_puts(&str, "hello");
+    string_putsn(&str, " world", 3);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "hello wo");
+    ck_assert_uint_eq(str.len, 8);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_putsn with n equal to string length
+START_TEST(test_string_putsn_exact_length)
+{
+    struct string str = {};
+
+    string_putsn(&str, "test", 4);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "test");
+    ck_assert_uint_eq(str.len, 4);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_putsn with n greater than string length
+START_TEST(test_string_putsn_exceeds_length)
+{
+    struct string str = {};
+
+    string_putsn(&str, "hi", 100);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "hi");
+    ck_assert_uint_eq(str.len, 2);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_putsn with n = 0
+START_TEST(test_string_putsn_zero)
+{
+    struct string str = {};
+
+    string_puts(&str, "initial");
+    string_putsn(&str, "test", 0);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "initial");
+    ck_assert_uint_eq(str.len, 7);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_putsn with multiple appends
+START_TEST(test_string_putsn_multiple)
+{
+    struct string str = {};
+
+    string_putsn(&str, "abcdef", 2);
+    string_putsn(&str, "123456", 3);
+    string_putsn(&str, "xyz", 1);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "ab123x");
+    ck_assert_uint_eq(str.len, 6);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_putsn on empty string with n = 0
+START_TEST(test_string_putsn_empty_zero)
+{
+    struct string str = {};
+
+    string_putsn(&str, "test", 0);
+
+    // Should result in an empty string with allocated memory
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "");
+    ck_assert_uint_eq(str.len, 0);
+
+    string_cleanup(&str);
+}
+END_TEST
+
 // Test suite setup
 Suite *string_suite(void)
 {
     Suite *s;
-    TCase *tc_core;
+    TCase *tc_puts;
+    TCase *tc_putsn;
+    TCase *tc_cleanup;
 
     s = suite_create("String");
-    tc_core = tcase_create("Core");
 
-    tcase_add_test(tc_core, test_string_puts_empty);
-    tcase_add_test(tc_core, test_string_puts_append);
-    tcase_add_test(tc_core, test_string_puts_multiple);
-    tcase_add_test(tc_core, test_string_puts_empty_append);
-    tcase_add_test(tc_core, test_string_cleanup);
+    // Test case for string_puts
+    tc_puts = tcase_create("string_puts");
+    tcase_add_test(tc_puts, test_string_puts_empty);
+    tcase_add_test(tc_puts, test_string_puts_append);
+    tcase_add_test(tc_puts, test_string_puts_multiple);
+    tcase_add_test(tc_puts, test_string_puts_empty_append);
+    suite_add_tcase(s, tc_puts);
 
-    suite_add_tcase(s, tc_core);
+    // Test case for string_putsn
+    tc_putsn = tcase_create("string_putsn");
+    tcase_add_test(tc_putsn, test_string_putsn_empty);
+    tcase_add_test(tc_putsn, test_string_putsn_append);
+    tcase_add_test(tc_putsn, test_string_putsn_exact_length);
+    tcase_add_test(tc_putsn, test_string_putsn_exceeds_length);
+    tcase_add_test(tc_putsn, test_string_putsn_zero);
+    tcase_add_test(tc_putsn, test_string_putsn_multiple);
+    tcase_add_test(tc_putsn, test_string_putsn_empty_zero);
+    suite_add_tcase(s, tc_putsn);
+
+    // Test case for string_cleanup
+    tc_cleanup = tcase_create("string_cleanup");
+    tcase_add_test(tc_cleanup, test_string_cleanup);
+    suite_add_tcase(s, tc_cleanup);
 
     return s;
 }
