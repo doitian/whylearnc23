@@ -3,6 +3,9 @@
 [test_requires]
 libcheck/0.15.2
 
+[options]
+libcheck/*:with_subunit=False
+
 [generators]
 CMakeDeps
 CMakeToolchain
