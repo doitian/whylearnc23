@@ -39,26 +39,25 @@ conan profile detect --force
 ### 3. Install Dependencies
 
 ```bash
-conan install . --build=missing
+conan install . --build=missing --settings=build_type=Release
 ```
 
 ### 4. Configure CMake
 
 #### On Windows (Visual Studio):
 ```bash
-cmake --preset conan-default
+cmake --preset conan-default -DCMAKE_C_FLAGS="/std:clatest"
 ```
 
 #### On Linux/macOS:
 ```bash
-cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --preset conan-release
 ```
 
 ### 5. Build the Project
 
 ```bash
-cmake --build build --config Release
+cmake --build --preset conan-release
 ```
 
 ### 6. Run Tests
@@ -66,11 +65,7 @@ cmake --build build --config Release
 #### Using CTest (recommended):
 
 ```bash
-# Windows
-ctest --test-dir build -C Release --output-on-failure
-
-# Linux/macOS
-ctest --test-dir build --output-on-failure
+ctest --preset conan-release --output-on-failure
 ```
 
 #### Or run the test executable directly:

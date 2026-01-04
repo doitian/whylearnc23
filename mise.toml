@@ -4,17 +4,17 @@ run = "conan install . --build=missing --settings=build_type=Release"
 [tasks.setup]
 depends = ["install"]
 run = "cmake --preset conan-release"
-run_windows = "cmake --preset conan-default"
+run_windows = "cmake --preset conan-default -DCMAKE_C_FLAGS=/std:clatest"
 
 [tasks.clean]
 run = "rm -rf build"
 
 [tasks.build]
 description = "Build the project"
-run = "cmake --build build --config Release"
+run = "cmake --build --preset conan-release"
 
 [tasks.test]
 description = "Build and run tests"
 depends = ["build"]
 run = "ctest --test-dir build --output-on-failure"
-run_windows = "ctest --test-dir build -C Release --output-on-failure"
+run_windows = "ctest --preset conan-release --output-on-failure"
