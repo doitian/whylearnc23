@@ -6,6 +6,11 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
+# MSVC needs special flag for C23 support (experimental)
+if(MSVC)
+    add_compile_options(/std:clatest)
+endif()
+
 # Enable testing
 enable_testing()
 
