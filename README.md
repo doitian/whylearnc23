@@ -17,10 +17,10 @@ whylearnc23/
 
 - **CMake** 3.25 or later
 - **Conan** 2.x package manager
-- **C Compiler** with C23 support:
-  - GCC 13+ (recommended)
-  - Clang 16+
-  - MSVC 19.35+ (Visual Studio 2022 17.5+)
+- **C Compiler**:
+  - GCC 13+ with C23 support (recommended)
+  - Clang 16+ with C23 support
+  - MSVC 19.35+ / Visual Studio 2022 17.5+ (uses `/std:clatest` for latest C features)
 
 ## Setup and Build
 

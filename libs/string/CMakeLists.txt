@@ -11,13 +11,6 @@ target_include_directories(string
         $<INSTALL_INTERFACE:include>
 )
 
-# Set C23 standard for this library
-set_target_properties(string PROPERTIES
-    C_STANDARD 23
-    C_STANDARD_REQUIRED ON
-    C_EXTENSIONS OFF
-)
-
 # Installation rules
 install(TARGETS string
     ARCHIVE DESTINATION lib
