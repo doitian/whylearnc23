@@ -1,5 +1,9 @@
 [tasks.setup]
-run = ["conan install . --build=missing", "cmake --preset conan-default"]
+run = ["conan install . --build=missing", "cmake --preset conan-release"]
+run_windows = [
+  "conan install . --build=missing",
+  "cmake --preset conan-default",
+]
 
 [tasks.clean]
 run = "rm -rf build"
