@@ -17,10 +17,10 @@ whylearnc23/
 
 - **CMake** 3.25 or later
 - **Conan** 2.x package manager
-- **C Compiler** with C23 support:
-  - GCC 13+ (recommended)
-  - Clang 16+
-  - MSVC 19.35+ (Visual Studio 2022 17.5+)
+- **C Compiler**:
+  - GCC 13+ with C23 support (recommended)
+  - Clang 16+ with C23 support
+  - MSVC 19.35+ / Visual Studio 2022 17.5+ (uses `/std:clatest` for latest C features)
 
 ## Setup and Build
 
@@ -39,26 +39,25 @@ conan profile detect --force
 ### 3. Install Dependencies
 
 ```bash
-conan install . --build=missing
+conan install . --build=missing --settings=build_type=Release
 ```
 
 ### 4. Configure CMake
 
 #### On Windows (Visual Studio):
 ```bash
-cmake --preset conan-default
+cmake --preset conan-default"
 ```
 
 #### On Linux/macOS:
 ```bash
-cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --preset conan-release
 ```
 
 ### 5. Build the Project
 
 ```bash
-cmake --build build --config Release
+cmake --build --preset conan-release
 ```
 
 ### 6. Run Tests
@@ -66,11 +65,7 @@ cmake --build build --config Release
 #### Using CTest (recommended):
 
 ```bash
-# Windows
-ctest --test-dir build -C Release --output-on-failure
-
-# Linux/macOS
-ctest --test-dir build --output-on-failure
+ctest --preset conan-release --output-on-failure
 ```
 
 #### Or run the test executable directly:
@@ -82,15 +77,6 @@ ctest --test-dir build --output-on-failure
 # Linux/macOS
 ./build/tests/string/string_tests
 ```
-
-## Libraries
-
-### String Library
-
-A utility library providing dynamic string operations with C23 features:
-
-- `string_puts()` - Append a C string to a dynamic string
-- `string_cleanup()` - Free allocated memory and reset the string
 
 ## Adding New Libraries
 
