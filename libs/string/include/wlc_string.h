@@ -12,12 +12,20 @@ struct string {
     size_t len;
 };
 
-// Appends the string s to the end of the string str.
-void string_puts(struct string *str, char const *s);
-
 /// Appends at most n characters from the string s to the end of the string str.
 void string_putsn(struct string *str, char const *s, size_t n);
 
+// Appends the string s to the end of the string str.
+inline void string_puts(struct string *str, char const *s) {
+    string_putsn(str, s, strlen(s));
+}
+
+/// Appends the character c to the end of the string str.
+inline void string_putc(struct string *str, char c) {
+    string_putsn(str, &c, 1);
+}
+
+/// Cleans up the string str.
 void string_cleanup(struct string *str);
 
 #ifdef __cplusplus

@@ -194,12 +194,29 @@ START_TEST(test_string_putsn_empty_zero)
 }
 END_TEST
 
+// Test: string_putc on empty string
+START_TEST(test_string_putc_empty)
+{
+    struct string str = {};
+
+    string_putc(&str, 'x');
+
+    // Should result in an empty string with allocated memory
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "x");
+    ck_assert_uint_eq(str.len, 1);
+
+    string_cleanup(&str);
+}
+END_TEST
+
 // Test suite setup
 Suite *string_suite(void)
 {
     Suite *s;
     TCase *tc_puts;
     TCase *tc_putsn;
+    TCase *tc_putc;
     TCase *tc_cleanup;
 
     s = suite_create("String");
@@ -222,6 +239,13 @@ Suite *string_suite(void)
     tcase_add_test(tc_putsn, test_string_putsn_multiple);
     tcase_add_test(tc_putsn, test_string_putsn_empty_zero);
     suite_add_tcase(s, tc_putsn);
+
+    // Test case for string_putc
+    tc_putc = tcase_create("string_putc");
+    tcase_add_test(tc_putc, test_string_putc_empty);
+    suite_add_tcase(s, tc_putc);
+
+    tc_cleanup = tcase_create("string_cleanup");
 
     // Test case for string_cleanup
     tc_cleanup = tcase_create("string_cleanup");
