@@ -1,0 +1,14 @@
+[tasks.setup]
+run = ["conan install . --build=missing", "cmake --preset conan-default"]
+
+[tasks.clean]
+run = "rm -rf build"
+
+[tasks.build]
+description = "Build the project"
+run = "cmake --build build --config Release"
+
+[tasks.test]
+description = "Build and run tests"
+depends = ["build"]
+run = "ctest --test-dir build -C Release --output-on-failure"
