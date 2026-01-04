@@ -210,6 +210,172 @@ START_TEST(test_string_putc_empty)
 }
 END_TEST
 
+// Test: string_printf with simple string format on empty string
+START_TEST(test_string_printf_empty)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "hello");
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "hello");
+    ck_assert_uint_eq(str.len, 5);
+    ck_assert_int_eq(result, 5);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf appends to existing string
+START_TEST(test_string_printf_append)
+{
+    struct string str = {};
+
+    string_puts(&str, "Count: ");
+    int result = string_printf(&str, "%d", 42);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "Count: 42");
+    ck_assert_uint_eq(str.len, 9);
+    ck_assert_int_eq(result, 2);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with integer format
+START_TEST(test_string_printf_integer)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "Value: %d", 123);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "Value: 123");
+    ck_assert_uint_eq(str.len, 10);
+    ck_assert_int_eq(result, 10);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with string format
+START_TEST(test_string_printf_string)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "Hello, %s!", "World");
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "Hello, World!");
+    ck_assert_uint_eq(str.len, 13);
+    ck_assert_int_eq(result, 13);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with character format
+START_TEST(test_string_printf_char)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "Grade: %c", 'A');
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "Grade: A");
+    ck_assert_uint_eq(str.len, 8);
+    ck_assert_int_eq(result, 8);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with multiple format arguments
+START_TEST(test_string_printf_multiple)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "%s %d %c", "Test", 42, '!');
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "Test 42 !");
+    ck_assert_uint_eq(str.len, 9);
+    ck_assert_int_eq(result, 9);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with float format
+START_TEST(test_string_printf_float)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "PI: %.2f", 3.14159);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "PI: 3.14");
+    ck_assert_uint_eq(str.len, 8);
+    ck_assert_int_eq(result, 8);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with empty format string
+START_TEST(test_string_printf_empty_format)
+{
+    struct string str = {};
+
+    string_puts(&str, "prefix");
+    int result = string_printf(&str, "");
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "prefix");
+    ck_assert_uint_eq(str.len, 6);
+    ck_assert_int_eq(result, 0);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with multiple calls
+START_TEST(test_string_printf_multiple_calls)
+{
+    struct string str = {};
+
+    string_printf(&str, "%d", 1);
+    string_printf(&str, " + ");
+    string_printf(&str, "%d", 2);
+    string_printf(&str, " = ");
+    int result = string_printf(&str, "%d", 3);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "1 + 2 = 3");
+    ck_assert_uint_eq(str.len, 9);
+    ck_assert_int_eq(result, 1);
+
+    string_cleanup(&str);
+}
+END_TEST
+
+// Test: string_printf with hexadecimal format
+START_TEST(test_string_printf_hex)
+{
+    struct string str = {};
+
+    int result = string_printf(&str, "0x%x", 255);
+
+    ck_assert_ptr_nonnull(str.contents);
+    ck_assert_str_eq(str.contents, "0xff");
+    ck_assert_uint_eq(str.len, 4);
+    ck_assert_int_eq(result, 4);
+
+    string_cleanup(&str);
+}
+END_TEST
+
 // Test suite setup
 Suite *string_suite(void)
 {
@@ -217,6 +383,7 @@ Suite *string_suite(void)
     TCase *tc_puts;
     TCase *tc_putsn;
     TCase *tc_putc;
+    TCase *tc_printf;
     TCase *tc_cleanup;
 
     s = suite_create("String");
@@ -245,7 +412,19 @@ Suite *string_suite(void)
     tcase_add_test(tc_putc, test_string_putc_empty);
     suite_add_tcase(s, tc_putc);
 
-    tc_cleanup = tcase_create("string_cleanup");
+    // Test case for string_printf
+    tc_printf = tcase_create("string_printf");
+    tcase_add_test(tc_printf, test_string_printf_empty);
+    tcase_add_test(tc_printf, test_string_printf_append);
+    tcase_add_test(tc_printf, test_string_printf_integer);
+    tcase_add_test(tc_printf, test_string_printf_string);
+    tcase_add_test(tc_printf, test_string_printf_char);
+    tcase_add_test(tc_printf, test_string_printf_multiple);
+    tcase_add_test(tc_printf, test_string_printf_float);
+    tcase_add_test(tc_printf, test_string_printf_empty_format);
+    tcase_add_test(tc_printf, test_string_printf_multiple_calls);
+    tcase_add_test(tc_printf, test_string_printf_hex);
+    suite_add_tcase(s, tc_printf);
 
     // Test case for string_cleanup
     tc_cleanup = tcase_create("string_cleanup");

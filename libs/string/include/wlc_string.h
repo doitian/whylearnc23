@@ -25,6 +25,9 @@ inline void string_putc(struct string *str, char c) {
     string_putsn(str, &c, 1);
 }
 
+/// Formats a string and appends it to the end of the string str. Returns the number of characters appended.
+int string_printf(struct string *str, char const *format, ...);
+
 /// Cleans up the string str.
 void string_cleanup(struct string *str);
 
