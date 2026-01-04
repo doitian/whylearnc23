@@ -2,6 +2,7 @@
 #define WHYLEARNC23_STRING_H
 
 #include <stddef.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
