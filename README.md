@@ -83,15 +83,6 @@ ctest --test-dir build --output-on-failure
 ./build/tests/string/string_tests
 ```
 
-## Libraries
-
-### String Library
-
-A utility library providing dynamic string operations with C23 features:
-
-- `string_puts()` - Append a C string to a dynamic string
-- `string_cleanup()` - Free allocated memory and reset the string
-
 ## Adding New Libraries
 
 To add a new library to the project:

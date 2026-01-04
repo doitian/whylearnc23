@@ -48,6 +48,12 @@ jobs:
       - name: Build
         run: cmake --build --preset ${{ matrix.preset }}
 
-      - name: Run tests
+      - name: Run tests (Windows)
+        if: runner.os == 'Windows'
         working-directory: build
         run: ctest -C Release --output-on-failure --verbose
+
+      - name: Run tests (Linux/macOS)
+        if: runner.os != 'Windows'
+        working-directory: build
+        run: ctest --output-on-failure --verbose
